@@ -29,10 +29,10 @@ A comprehensive cross-platform social media posting tool that supports X (Twitte
 ### Setup
 
 1. **Download the script**:
-   git it, duh
-   else
    ```bash
-   curl -o social_poster.py [script_url]
+   git pull [repo url]
+   -OR-
+   curl -o social_poster.py [repo url]
    ```
 
 3. **Make it executable (Linux/Mac)**:
