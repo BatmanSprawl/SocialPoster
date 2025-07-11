@@ -1,138 +1,179 @@
-# SocialPoster
-Social Media Poster Script
+# Social Media Poster
 
-~-~-~-~-~-~-SCRIPT~-~-~-~-~-~-~-~-
+A comprehensive cross-platform social media posting tool that supports X (Twitter), Instagram, LinkedIn, Bluesky, and Mastodon. Works on both Windows and Linux with CLI and GUI interfaces.
 
-I've created a comprehensive Python script for posting to multiple social media platforms with secure 1Password integration. Here's what the script includes:
-Key Features:
+## Features
 
-Multi-platform support: Instagram, X (Twitter), Bluesky, and LinkedIn
-Secure credential management: Uses 1Password CLI to store API keys safely
-Character limit checking: Warns you before posting if content exceeds platform limits
-Image upload support: Handles image attachments for supported platforms
-Flexible posting options: Post to individual platforms or all at once
-Error handling: Comprehensive error handling with clear feedback
+- **Multi-platform support**: Post to X, Instagram, LinkedIn, Bluesky, and Mastodon
+- **Character limit checking**: Automatically validates post length for each platform
+- **Image support**: Attach images to posts (platform dependent)
+- **Flexible authentication**: Use 1Password CLI or manual configuration
+- **Cross-platform**: Works on Windows and Linux
+- **Dual interface**: Command line and GUI modes
+- **Hyperlink support**: Include links in your posts
 
-Setup Requirements:
+## Installation
 
-Install dependencies:
-bashpip install requests requests-oauthlib
+### Prerequisites
 
-Install 1Password CLI: Follow the guide at https://developer.1password.com/docs/cli/get-started/
-Sign in to 1Password CLI:
-bashop signin
+1. **Python 3.6 or higher**
+2. **Required Python packages**:
+   ```bash
+   pip install requests
+   ```
 
-Create API credential items in your 1Password vault with these exact names:
+3. **Optional: 1Password CLI** (if using 1Password integration)
+   - Download from: https://developer.1password.com/docs/cli/get-started/
+   - Install and configure with `op signin`
 
-"Social Media - Instagram API"
-"Social Media - X API"
-"Social Media - Bluesky API"
-"Social Media - LinkedIn API"
+### Setup
 
+1. **Download the script**:
+   ```bash
+   curl -o social_poster.py [script_url]
+   ```
 
-Configure API credentials for each platform in their respective 1Password items:
+2. **Make it executable (Linux/Mac)**:
+   ```bash
+   chmod +x social_poster.py
+   ```
 
-Instagram: access_token, instagram_account_id
-X: consumer_key, consumer_secret, access_token, access_token_secret
-Bluesky: identifier, password
-LinkedIn: access_token, person_id
+3. **Run initial setup**:
+   ```bash
+   python social_poster.py --text "test" --check-limits
+   ```
+   This will create a `social_config.json` template file.
 
+## Configuration
 
+### Method 1: Manual Configuration
 
-Usage Examples:
-bash# Post to X only
-python social_poster.py -p x -t "Hello world!"
+Edit `social_config.json` and fill in your API credentials:
 
-# Post to multiple platforms
-python social_poster.py -p x bluesky linkedin -t "Check out this cool project!"
+```json
+{
+  "use_1password": false,
+  "twitter": {
+    "bearer_token": "YOUR_TWITTER_BEARER_TOKEN"
+  },
+  "bluesky": {
+    "handle": "your.handle.bsky.social",
+    "password": "your-app-password"
+  }
+}
+```
 
-# Post with an image
-python social_poster.py -p instagram x -t "Beautiful sunset!" -i ./sunset.jpg
+### Method 2: 1Password Integration
 
+1. Store your API credentials in 1Password items
+2. Configure `social_config.json`:
+   ```json
+   {
+     "use_1password": true,
+     "1password_vault": "Private",
+     "twitter": {
+       "op_item_name": "Twitter API"
+     }
+   }
+   ```
+
+## Platform-Specific Setup
+
+### Twitter/X
+1. Create a Twitter Developer account
+2. Create a new app and generate Bearer Token
+3. Add the Bearer Token to your config
+
+### Instagram
+- **Note**: Instagram posting requires a business account and complex media upload process
+- This implementation provides the framework but requires additional development
+
+### LinkedIn
+1. Create a LinkedIn Developer account
+2. Create an app with r_liteprofile and w_member_social permissions
+3. Get your User ID and Access Token
+
+### Bluesky
+1. Create a Bluesky account
+2. Generate an App Password in Settings
+3. Use your handle and app password
+
+### Mastodon
+1. Go to your Mastodon instance → Settings → Development
+2. Create a new application
+3. Copy the Access Token
+
+## Usage
+
+### Command Line Interface
+
+#### Basic usage:
+```bash
 # Post to all platforms
-python social_poster.py -p all -t "Big announcement coming soon!"
+python social_poster.py --text "Hello, world!"
+
+# Post to specific platforms
+python social_poster.py --text "Hello, world!" --platforms twitter bluesky
+
+# Include an image
+python social_poster.py --text "Check out this image!" --image path/to/image.jpg
 
 # Check character limits without posting
-python social_poster.py -p x bluesky -t "This is a test message" --check-only
-Important Notes:
+python social_poster.py --text "Long message here..." --check-limits
+```
 
-Instagram API limitations: The Instagram Graph API requires a Facebook Page and Instagram Business Account, and doesn't support text-only posts.
-API Setup: Each platform requires you to register for developer access and create API applications to get the necessary credentials.
-Rate limits: Each platform has different rate limits. The script includes basic error handling for this.
-Security: Never hardcode API credentials in your script. The 1Password integration ensures your sensitive data stays secure.
+#### Advanced usage:
+```bash
+# Use custom config file
+python social_poster.py --config my_config.json --text "Hello!"
 
-The script is extensively commented to help you understand each section and make modifications as needed. Each function explains what it does and what APIs it calls, making it easy to customize for your specific needs.
+# Post with hyperlinks
+python social_poster.py --text "Check out this link: https://example.com"
+```
 
-~-~-~-~-~-~-GUI~-~-~-~-~-~-~-~-
+### GUI Interface
 
-I've created a complete GUI application for your social media poster! Here's what the application includes:
-Key Features:
-🎯 User Interface
+Launch the GUI:
+```bash
+python social_poster.py --gui
+```
 
-Platform Selection: Checkboxes for Instagram, X (Twitter), Bluesky, and LinkedIn
-Text Input: Large text area with scroll support for your post content
-Image Upload: Select and preview images with file dialog
-Real-time Validation: Character count display with color-coded warnings
-Action Buttons: Post, Clear All, and Settings buttons
+The GUI provides:
+- Text input area with live character count
+- Platform selection checkboxes
+- Image file browser
+- Configuration status checker
+- Post results display
 
-📊 Smart Validation
+## Character Limits
 
-Character Limits: Real-time checking against each platform's limits
-Visual Feedback: Color-coded character counts (green/orange/red)
-URL Detection: Automatically detects and counts URLs in your text
-Over-limit Warnings: Warns before posting if you exceed character limits
+- **Twitter**: 280 characters
+- **Instagram**: 2,200 characters (caption)
+- **LinkedIn**: 3,000 characters
+- **Bluesky**: 300 characters
+- **Mastodon**: 500 characters (default, varies by instance)
 
-🔒 Security Features
+## Troubleshooting
 
-1Password Integration: Secure credential storage and retrieval
-No Hardcoded Secrets: All API keys stored safely in 1Password
-Settings Panel: Easy setup instructions and connection testing
+### Common Issues
 
-🚀 Posting Features
+1. **"Config file not found"**
+   - Run the script once to generate the template
+   - Fill in your credentials
 
-Multi-platform Posting: Post to selected platforms simultaneously
-Image Support: Upload and attach images to your posts
-Progress Tracking: Visual progress bar during posting
-Results Display: Detailed success/failure report after posting
+2. **"Authentication failed"**
+   - Verify your API keys/tokens are correct
+   - Check if tokens have expired
 
-Installation Requirements:
-bash# Install required Python packages
-pip install requests requests-oauthlib pillow
+3. **"GUI not available"**
+   - Install tkinter: `sudo apt-get install python3-tk` (Linux)
+   - tkinter is included with Python on Windows
 
-# Install 1Password CLI
-# Visit: https://developer.1password.com/docs/cli/get-started/
-Setup Instructions:
+4. **1Password CLI errors**
+   - Ensure 1Password CLI is installed and signed in
+   - Check vault name and item names are correct
 
-Install 1Password CLI and sign in with op signin
-Create these items in your 1Password vault:
+### Platform-Specific Issues
 
-"Social Media - Instagram API" (fields: access_token, instagram_account_id)
-"Social Media - X API" (fields: consumer_key, consumer_secret, access_token, access_token_secret)
-"Social Media - Bluesky API" (fields: identifier, password)
-"Social Media - LinkedIn API" (fields: access_token, person_id)
-
-
-Run the application:
-bashpython social_media_gui.py
-
-
-How to Use:
-
-Select Platforms: Check the boxes for platforms you want to post to
-Enter Text: Type your post content in the text area
-Add Image (optional): Click "Select Image" to upload a photo
-Check Limits: Watch the character count display for warnings
-Post: Click "📤 Post to Selected Platforms" to send your content
-Review Results: See the success/failure report for each platform
-
-Special Features:
-
-Select All/Deselect All: Quickly toggle all platforms
-Image Preview: See a thumbnail of your selected image
-URL Detection: Automatically detects links in your text
-Settings Panel: Test 1Password connection and view setup instructions
-Threading: Posts run in background threads so the UI stays responsive
-Error Handling: Comprehensive error handling with user-friendly messages
-
-The application is designed to be intuitive and safe, with multiple validation layers to prevent posting mistakes. The real-time character counting helps you optimize your content for each platform's specific requirements.
-To get started, just run the script and click the "⚙️ Settings" button for detailed setup instructions!
+- **Twitter**: Requires Bearer Token (not just API keys)
+- **Instagram**: Complex
